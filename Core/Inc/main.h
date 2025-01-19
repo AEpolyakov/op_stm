@@ -49,7 +49,6 @@ extern uint16_t uspu_leds[USPU_LED_SIZE];
 extern uint16_t acps[ACPS_SIZE];
 extern uint16_t op_data[OP_DATA_SIZE];
 extern uint16_t op_command[OP_COMMAND_SIZE];
-extern uint8_t uart_tx_rq;
 
 extern uint8_t tx_buffer[TX_BUFFER_SIZE];
 extern uint8_t rx_buffer[RX_BUFFER_SIZE];

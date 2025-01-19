@@ -53,9 +53,6 @@ uint16_t acps[ACPS_SIZE];
 uint16_t op_data[OP_DATA_SIZE];
 uint16_t op_command[OP_COMMAND_SIZE];
 
-
-uint8_t uart_tx_rq;
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -107,6 +104,7 @@ int main(void)
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim4);
+  HAL_UART_Receive_DMA(&huart4, rx_buffer, RX_BUFFER_SIZE);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -116,26 +114,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  HAL_UART_Receive_DMA(&huart4, rx_buffer, RX_BUFFER_SIZE);
-	  while(!uart_tx_rq) {
-		  HAL_GPIO_WritePin(GPIOE, LED3_Pin, GPIO_PIN_RESET);
-		  uart_tx_rq = 0;
-		  HAL_UART_Transmit_DMA(&huart4, tx_buffer, TX_BUFFER_SIZE);
-		  HAL_GPIO_WritePin(GPIOE, LED3_Pin, GPIO_PIN_SET);
-	  }
-
-//	  if (uart_tx_rq == 0) {
-//		  HAL_UART_Receive(&huart4, rx_buffer, RX_BUFFER_SIZE, HAL_MAX_DELAY);
-//		  op_command[0] = rx_buffer[1] << 8 | rx_buffer[0];
-//		  int i;
-//		  for (i=0; i<USPU_BUTTON_SIZE; i++) {
-//			  uspu_buttons[i] = rx_buffer[i*2+3] << 8 | rx_buffer[i*2+2];
-//		  }
-//
-//		  uart_tx_rq = 1;
-//	  }
-
-
 
   }
   /* USER CODE END 3 */
