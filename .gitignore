@@ -1,0 +1,10 @@
+.idea
+.settings
+Debug
+Drivers
+
+.cproject
+.mxproject
+op Debug.launch
+STM32F427VGTX_FLASH.ld
+STM32F427VGTX_RAM.ld
