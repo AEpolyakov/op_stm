@@ -42,7 +42,10 @@ extern "C" {
 #define OP_COMMAND_SIZE 1
 
 #define TX_BUFFER_SIZE 74
-#define RX_BUFFER_SIZE 12
+#define RX_BUFFER_SIZE 14
+
+#define US_1 6
+#define US_2 15
 
 extern uint16_t uspu_buttons[USPU_BUTTON_SIZE];
 extern uint16_t uspu_leds[USPU_LED_SIZE];
@@ -52,6 +55,8 @@ extern uint16_t op_command[OP_COMMAND_SIZE];
 
 extern uint8_t tx_buffer[TX_BUFFER_SIZE];
 extern uint8_t rx_buffer[RX_BUFFER_SIZE];
+
+extern uint8_t upr_zap_count;
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

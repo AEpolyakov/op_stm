@@ -61,6 +61,7 @@ void prepare_tx_buffer();
 
 /* External variables --------------------------------------------------------*/
 extern TIM_HandleTypeDef htim4;
+extern TIM_HandleTypeDef htim9;
 extern DMA_HandleTypeDef hdma_uart4_tx;
 extern DMA_HandleTypeDef hdma_uart4_rx;
 extern UART_HandleTypeDef huart4;
@@ -236,36 +237,77 @@ void DMA1_Stream4_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles TIM1 break interrupt and TIM9 global interrupt.
+  */
+void TIM1_BRK_TIM9_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM1_BRK_TIM9_IRQn 0 */
+
+  /* USER CODE END TIM1_BRK_TIM9_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim9);
+  /* USER CODE BEGIN TIM1_BRK_TIM9_IRQn 1 */
+
+  uint16_t op_command = (rx_buffer[1]<< 8 | rx_buffer[0]);
+  int period;
+  uint16_t oo_delay = ((rx_buffer[3] << 8) | rx_buffer[2]) + 147;
+
+  if (op_command & 0x0100) {
+	  period = 2500;
+  } else {
+	  period = 3500;
+  }
+
+  if (upr_zap_count == 0){
+  } else {
+	  if (upr_zap_count % 2) {
+		  // UZ
+		  HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
+		  delay(US_1);
+		  HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
+		  TIM9->ARR = oo_delay;
+	  } else {
+//		  HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_RESET);
+//		  delay(US_1);
+//		  HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_SET);
+		  TIM9->ARR = period - oo_delay;
+	  }
+  }
+  upr_zap_count++;
+
+
+  /* USER CODE END TIM1_BRK_TIM9_IRQn 1 */
+}
+
+/**
   * @brief This function handles TIM4 global interrupt.
   */
 void TIM4_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM4_IRQn 0 */
-	// 1us - delay 6
-	// 2us - delay 15
+	TIM9->CNT = 0;
+	TIM9->ARR = 2000;
 
   /* USER CODE END TIM4_IRQn 0 */
   HAL_TIM_IRQHandler(&htim4);
   /* USER CODE BEGIN TIM4_IRQn 1 */
+  // 4000 for 120
+  // 2500 for 40
+  upr_zap_count = 0;
 
-//  HAL_GPIO_WritePin(GPIOE, LED3_Pin, GPIO_PIN_RESET);
-//  delay(15);
-//  HAL_GPIO_WritePin(GPIOE, LED3_Pin, GPIO_PIN_SET);
+//  TIM9->CCR1 = 99;
+
+  		  HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_RESET);
+  		  delay(US_1);
+  		  HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_SET);
+
+//  HAL_GPIO_WritePin(L_TI_GPIO_Port, L_TI_Pin, GPIO_PIN_RESET);
+//  delay(US_1);
+//  HAL_GPIO_WritePin(L_TI_GPIO_Port, L_TI_Pin, GPIO_PIN_SET);
 
 //  ou_exchange();
   prepare_tx_buffer();
 
 
-//	if (uart_tx_rq) {
-//		HAL_GPIO_WritePin(GPIOE, LED3_Pin, GPIO_PIN_RESET);
-//		prepare_tx_buffer();
-//
-//		HAL_UART_Transmit(&huart4, tx_buffer, TX_BUFFER_SIZE, HAL_MAX_DELAY);
-//		// HAL_UART_Transmit(&huart4, tx_buffer, TX_BUFFER_SIZE, 0x10);
-//
-//		uart_tx_rq = 0;
-//		HAL_GPIO_WritePin(GPIOE, LED3_Pin, GPIO_PIN_SET);
-//	}
 
   /* USER CODE END TIM4_IRQn 1 */
 }
@@ -284,10 +326,10 @@ void UART4_IRQHandler(void)
 
 /* USER CODE BEGIN 1 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-    HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
+//    HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
     HAL_UART_Transmit_DMA(&huart4, tx_buffer, TX_BUFFER_SIZE);
     HAL_UART_Receive_DMA(&huart4, rx_buffer, RX_BUFFER_SIZE);
-    HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
+//    HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
 }
 
 
