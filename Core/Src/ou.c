@@ -86,7 +86,7 @@ void write_data(uint16_t data){
 
 /** Read byte from gpio  */
 uint16_t read_data(){
-	uint16_t t;
+	uint16_t t = 0;
 
 	buffer_direction_in();
 

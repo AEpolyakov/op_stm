@@ -15,6 +15,10 @@ uint16_t read_word(uint16_t address);
 void write_address(uint16_t address);
 void write_data(uint16_t data);
 uint16_t read_data();
+
+
+void buffer_direction_out();
+void buffer_direction_in();
 void write_in();
 void write_out();
 void wait_sin();
