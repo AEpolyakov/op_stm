@@ -28,6 +28,7 @@ void ou_exchange() {
 	for(address = 0; address < OP_COMMAND_SIZE; address++) {
 		write_word(op_command[address], address + 0x01);
 	}
+	write_address(0);
 }
 
 
@@ -47,17 +48,18 @@ uint16_t read_word(uint16_t address) {
 void write_address(uint16_t address){
 	uint16_t temp = ~address;
 
-
-	HAL_GPIO_WritePin(A0_GPIO_Port, A0_Pin, temp && GPIO_PIN_0);
-	HAL_GPIO_WritePin(A1_GPIO_Port, A1_Pin, temp && GPIO_PIN_1);
-	HAL_GPIO_WritePin(A2_GPIO_Port, A2_Pin, temp && GPIO_PIN_2);
-	HAL_GPIO_WritePin(A3_GPIO_Port, A3_Pin, temp && GPIO_PIN_3);
-	HAL_GPIO_WritePin(A4_GPIO_Port, A4_Pin, temp && GPIO_PIN_4);
-	HAL_GPIO_WritePin(A5_GPIO_Port, A5_Pin, temp && GPIO_PIN_5);
-	HAL_GPIO_WritePin(A6_GPIO_Port, A6_Pin, temp && GPIO_PIN_6);
-	HAL_GPIO_WritePin(A7_GPIO_Port, A7_Pin, temp && GPIO_PIN_7);
-	HAL_GPIO_WritePin(A8_GPIO_Port, A8_Pin, temp && GPIO_PIN_8);
-	HAL_GPIO_WritePin(A9_GPIO_Port, A9_Pin, temp && GPIO_PIN_9);
+	HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(A0_GPIO_Port, A0_Pin, temp & GPIO_PIN_0 ? 1 : 0);
+	HAL_GPIO_WritePin(A1_GPIO_Port, A1_Pin, temp & GPIO_PIN_1 ? 1 : 0);
+	HAL_GPIO_WritePin(A2_GPIO_Port, A2_Pin, temp & GPIO_PIN_2 ? 1 : 0);
+	HAL_GPIO_WritePin(A3_GPIO_Port, A3_Pin, temp & GPIO_PIN_3 ? 1 : 0);
+	HAL_GPIO_WritePin(A4_GPIO_Port, A4_Pin, temp & GPIO_PIN_4 ? 1 : 0);
+	HAL_GPIO_WritePin(A5_GPIO_Port, A5_Pin, temp & GPIO_PIN_5 ? 1 : 0);
+	HAL_GPIO_WritePin(A6_GPIO_Port, A6_Pin, temp & GPIO_PIN_6 ? 1 : 0);
+	HAL_GPIO_WritePin(A7_GPIO_Port, A7_Pin, temp & GPIO_PIN_7 ? 1 : 0);
+	HAL_GPIO_WritePin(A8_GPIO_Port, A8_Pin, temp & GPIO_PIN_8 ? 1 : 0);
+	HAL_GPIO_WritePin(A9_GPIO_Port, A9_Pin, temp & GPIO_PIN_9 ? 1 : 0);
+	HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_RESET);
 }
 
 void write_data(uint16_t data){
@@ -65,22 +67,22 @@ void write_data(uint16_t data){
 
 	buffer_direction_out();
 
-	HAL_GPIO_WritePin(D0_GPIO_Port,  D0_Pin,  temp && GPIO_PIN_0 );
-	HAL_GPIO_WritePin(D1_GPIO_Port,  D1_Pin,  temp && GPIO_PIN_1 );
-	HAL_GPIO_WritePin(D2_GPIO_Port,  D2_Pin,  temp && GPIO_PIN_2 );
-	HAL_GPIO_WritePin(D3_GPIO_Port,  D3_Pin,  temp && GPIO_PIN_3 );
-	HAL_GPIO_WritePin(D4_GPIO_Port,  D4_Pin,  temp && GPIO_PIN_4 );
-	HAL_GPIO_WritePin(D5_GPIO_Port,  D5_Pin,  temp && GPIO_PIN_5 );
-	HAL_GPIO_WritePin(D6_GPIO_Port,  D6_Pin,  temp && GPIO_PIN_6 );
-	HAL_GPIO_WritePin(D7_GPIO_Port,  D7_Pin,  temp && GPIO_PIN_7 );
-	HAL_GPIO_WritePin(D8_GPIO_Port,  D8_Pin,  temp && GPIO_PIN_8 );
-	HAL_GPIO_WritePin(D9_GPIO_Port,  D9_Pin,  temp && GPIO_PIN_9 );
-	HAL_GPIO_WritePin(D10_GPIO_Port, D10_Pin, temp && GPIO_PIN_10);
-	HAL_GPIO_WritePin(D11_GPIO_Port, D11_Pin, temp && GPIO_PIN_11);
-	HAL_GPIO_WritePin(D12_GPIO_Port, D12_Pin, temp && GPIO_PIN_12);
-	HAL_GPIO_WritePin(D13_GPIO_Port, D13_Pin, temp && GPIO_PIN_13);
-	HAL_GPIO_WritePin(D14_GPIO_Port, D14_Pin, temp && GPIO_PIN_14);
-	HAL_GPIO_WritePin(D15_GPIO_Port, D15_Pin, temp && GPIO_PIN_15);
+	HAL_GPIO_WritePin(D0_GPIO_Port,  D0_Pin,  temp & GPIO_PIN_0 ? 1 : 0);
+	HAL_GPIO_WritePin(D1_GPIO_Port,  D1_Pin,  temp & GPIO_PIN_1 ? 1 : 0);
+	HAL_GPIO_WritePin(D2_GPIO_Port,  D2_Pin,  temp & GPIO_PIN_2 ? 1 : 0);
+	HAL_GPIO_WritePin(D3_GPIO_Port,  D3_Pin,  temp & GPIO_PIN_3 ? 1 : 0);
+	HAL_GPIO_WritePin(D4_GPIO_Port,  D4_Pin,  temp & GPIO_PIN_4 ? 1 : 0);
+	HAL_GPIO_WritePin(D5_GPIO_Port,  D5_Pin,  temp & GPIO_PIN_5 ? 1 : 0);
+	HAL_GPIO_WritePin(D6_GPIO_Port,  D6_Pin,  temp & GPIO_PIN_6 ? 1 : 0);
+	HAL_GPIO_WritePin(D7_GPIO_Port,  D7_Pin,  temp & GPIO_PIN_7 ? 1 : 0);
+	HAL_GPIO_WritePin(D8_GPIO_Port,  D8_Pin,  temp & GPIO_PIN_8 ? 1 : 0);
+	HAL_GPIO_WritePin(D9_GPIO_Port,  D9_Pin,  temp & GPIO_PIN_9 ? 1 : 0);
+	HAL_GPIO_WritePin(D10_GPIO_Port, D10_Pin, temp & GPIO_PIN_10 ? 1 : 0);
+	HAL_GPIO_WritePin(D11_GPIO_Port, D11_Pin, temp & GPIO_PIN_11 ? 1 : 0);
+	HAL_GPIO_WritePin(D12_GPIO_Port, D12_Pin, temp & GPIO_PIN_12 ? 1 : 0);
+	HAL_GPIO_WritePin(D13_GPIO_Port, D13_Pin, temp & GPIO_PIN_13 ? 1 : 0);
+	HAL_GPIO_WritePin(D14_GPIO_Port, D14_Pin, temp & GPIO_PIN_14 ? 1 : 0);
+	HAL_GPIO_WritePin(D15_GPIO_Port, D15_Pin, temp & GPIO_PIN_15 ? 1 : 0);
 
 	write_out();
 	delay(500);
