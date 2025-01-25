@@ -23,6 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "utils.h"
+#include "ou.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -265,17 +266,17 @@ void TIM1_BRK_TIM9_IRQHandler(void)
   } else {
 	  if (upr_zap_count % 2) {
 		  // UZ
-//		  HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_RESET);
-//		  delay(US_1);
-//		  HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_SET);
+		  HAL_GPIO_WritePin(UPRZAP_GPIO_Port, UPRZAP_Pin, GPIO_PIN_RESET);
+		  delay(US_1);
+		  HAL_GPIO_WritePin(UPRZAP_GPIO_Port, UPRZAP_Pin, GPIO_PIN_SET);
 //		  HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
 //		  delay(US_1);
 //		  HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
 		  TIM9->ARR = oo_delay;
 	  } else {
-		  HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_RESET);
+		  HAL_GPIO_WritePin(OO_GPIO_Port, GPIO_PIN_5, GPIO_PIN_SET);
 		  delay(US_1);
-		  HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_SET);
+		  HAL_GPIO_WritePin(OO_GPIO_Port, GPIO_PIN_5, GPIO_PIN_RESET);
 //		  HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
 //		  delay(US_1);
 //		  HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
@@ -302,21 +303,9 @@ void TIM4_IRQHandler(void)
   TIM9->ARR = 1200;
   upr_zap_count = 0;
 
-//  		  HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_RESET);
-//  		  delay(US_1);
-//  		  HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_SET);
-		  HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
-		  delay(US_1);
-		  HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
-//		  HAL_UART_Transmit_DMA(&huart4, tx_buffer, TX_BUFFER_SIZE);
-//  HAL_GPIO_WritePin(L_TI_GPIO_Port, L_TI_Pin, GPIO_PIN_RESET);
-//  delay(US_1);
-//  HAL_GPIO_WritePin(L_TI_GPIO_Port, L_TI_Pin, GPIO_PIN_SET);
-
-//  ou_exchange();
+  make_ti();
+  ou_exchange();
   prepare_tx_buffer();
-
-
 
   /* USER CODE END TIM4_IRQn 1 */
 }
@@ -343,59 +332,4 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 //    HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_SET);
 }
 
-
-void prepare_tx_buffer() {
-	int i;
-	int buffer_index = 0;
-
-	int t1[USPU_BUTTON_SIZE] =  {0xa001, 0xa002, 0xa003, 0xa004, 0xa005, 0xa006, 0xa007, 0xa008, 0xa009};
-
-	for (i=0; i<USPU_BUTTON_SIZE; i++) {
-		uspu_buttons[i] = t1[i];
-	}
-
-	int t2[ACPS_SIZE] =  {0xb1fe, 0xb1ff, 0xb200, 0xb201, 0xb000, 0xbfff};
-
-	for (i=0; i<ACPS_SIZE; i++) {
-		acps[i] = t2[i];
-	}
-
-	int t3[OP_DATA_SIZE] =  {0xc001, 0xc002, 0xc003, 0xc004, 0xc005, 0xc006, 0xc007, 0xc008, 0xc009, 0xc00a, 0xc00b, 0xc00c, 0xc00d, 0xc00e, 0xc00f, 0xc010, 0xc011, 0xc012};
-
-	for (i=0; i<OP_DATA_SIZE; i++) {
-		op_data[i] = t3[i];
-	}
-
-	tx_buffer[0] = 0xad;
-	tx_buffer[1] = 0xde;
-	tx_buffer[2] = 0xef;
-	tx_buffer[3] = 0xbe;
-	buffer_index = 4;
-
-	for (i=0;i<USPU_BUTTON_SIZE;i++) {
-		tx_buffer[buffer_index] = uspu_buttons[i] & 0xff;
-		buffer_index++;
-		tx_buffer[buffer_index] = (uspu_buttons[i] >> 8) & 0xff;
-		buffer_index++;
-	}
-
-	for (i=0;i<ACPS_SIZE;i++) {
-		tx_buffer[buffer_index] = acps[i] & 0xff;
-		buffer_index++;
-		tx_buffer[buffer_index] = (acps[i] >> 8) & 0xff;
-		buffer_index++;
-	}
-
-	for (i=0;i<OP_DATA_SIZE;i++) {
-		tx_buffer[buffer_index] = op_data[i] & 0xff;
-		buffer_index++;
-		tx_buffer[buffer_index] = (op_data[i] >> 8) & 0xff;
-		buffer_index++;
-	}
-
-	tx_buffer[TX_BUFFER_SIZE-4] = 0xad;
-	tx_buffer[TX_BUFFER_SIZE-3] = 0xde;
-	tx_buffer[TX_BUFFER_SIZE-2] = 0xef;
-	tx_buffer[TX_BUFFER_SIZE-1] = 0xbe;
-}
 /* USER CODE END 1 */

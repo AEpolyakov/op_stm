@@ -3,6 +3,9 @@
 #include "stm32f4xx_hal.h"
 #include "utils.h"
 
+uint8_t no_sin_error;
+uint8_t zero_sin_error;
+
 void ou_exchange() {
 	uint8_t address;
 
@@ -35,7 +38,6 @@ void write_word(uint16_t data, uint16_t address) {
 
 uint16_t read_word(uint16_t address) {
 	uint16_t t;
-
 	write_address(address);
 	t = read_data();
 
@@ -44,6 +46,7 @@ uint16_t read_word(uint16_t address) {
 
 void write_address(uint16_t address){
 	uint16_t temp = ~address;
+
 
 	HAL_GPIO_WritePin(A0_GPIO_Port, A0_Pin, temp && GPIO_PIN_0);
 	HAL_GPIO_WritePin(A1_GPIO_Port, A1_Pin, temp && GPIO_PIN_1);
@@ -87,12 +90,31 @@ void write_data(uint16_t data){
 /** Read byte from gpio  */
 uint16_t read_data(){
 	uint16_t t = 0;
+	uint8_t data_readed = 0;
+	uint16_t i;
+
+	no_sin_error = 1;
+	zero_sin_error = HAL_GPIO_ReadPin(D0_GPIO_Port,  L_SIN_IN_Pin) ? 0 : 1;
 
 	buffer_direction_in();
-
 	write_in();
-	wait_sin();
 
+	for(i=0; i<80; i++) {
+		if (data_readed == 0) {
+			if (HAL_GPIO_ReadPin(D0_GPIO_Port,  L_SIN_IN_Pin) == 0) {
+				no_sin_error = 0;
+				data_readed = 1;
+				t = gpio_data_read();
+			}
+		}
+	}
+
+
+	return ~t;
+}
+
+uint16_t gpio_data_read(){
+	uint16_t t = 0;
 	t |= HAL_GPIO_ReadPin(D0_GPIO_Port,  D0_Pin ) << 0;
 	t |= HAL_GPIO_ReadPin(D1_GPIO_Port,  D1_Pin ) << 1;
 	t |= HAL_GPIO_ReadPin(D2_GPIO_Port,  D2_Pin ) << 2;
@@ -109,8 +131,7 @@ uint16_t read_data(){
 	t |= HAL_GPIO_ReadPin(D13_GPIO_Port, D13_Pin) << 13;
 	t |= HAL_GPIO_ReadPin(D14_GPIO_Port, D14_Pin) << 14;
 	t |= HAL_GPIO_ReadPin(D15_GPIO_Port, D15_Pin) << 15;
-
-	return ~t;
+	return t;
 }
 
 void write_in(){
@@ -135,12 +156,65 @@ void buffer_direction_in(){
 	HAL_GPIO_WritePin(DATA_DIR_GPIO_Port, DATA_DIR_Pin, GPIO_PIN_RESET);
 }
 
-void wait_sin(){
-
-	uint16_t t = 1;
-
-	while(t == 1){
-		t = HAL_GPIO_ReadPin(D0_GPIO_Port,  L_SIN_IN_Pin);
-	}
+void make_ti(){
+	HAL_GPIO_WritePin(L_TIOUT_GPIO_Port, L_TIOUT_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
+	delay(US_1);
+	HAL_GPIO_WritePin(L_TIOUT_GPIO_Port, L_TIOUT_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
 }
 
+void prepare_tx_buffer() {
+	int i;
+	int buffer_index = 0;
+
+	int t1[USPU_BUTTON_SIZE] =  {0xa001, 0xa002, 0xa003, 0xa004, 0xa005, 0xa006, 0xa007, 0xa008, 0xa009};
+
+	for (i=0; i<USPU_BUTTON_SIZE; i++) {
+		uspu_buttons[i] = t1[i];
+	}
+
+	int t2[ACPS_SIZE] =  {0xb1fe, 0xb1ff, 0xb200, 0xb201, 0xb000, 0xbfff};
+
+	for (i=0; i<ACPS_SIZE; i++) {
+		acps[i] = t2[i];
+	}
+
+	int t3[OP_DATA_SIZE] =  {0xc001, 0xc002, 0xc003, 0xc004, 0xc005, 0xc006, 0xc007, 0xc008, 0xc009, 0xc00a, 0xc00b, 0xc00c, 0xc00d, 0xc00e, 0xc00f, 0xc010, 0xc011, 0xc012};
+
+	for (i=0; i<OP_DATA_SIZE; i++) {
+		op_data[i] = t3[i];
+	}
+
+	tx_buffer[0] = 0xad;
+	tx_buffer[1] = 0xde;
+	tx_buffer[2] = 0xef;
+	tx_buffer[3] = 0xbe;
+	buffer_index = 4;
+
+	for (i=0;i<USPU_BUTTON_SIZE;i++) {
+		tx_buffer[buffer_index] = uspu_buttons[i] & 0xff;
+		buffer_index++;
+		tx_buffer[buffer_index] = (uspu_buttons[i] >> 8) & 0xff;
+		buffer_index++;
+	}
+
+	for (i=0;i<ACPS_SIZE;i++) {
+		tx_buffer[buffer_index] = acps[i] & 0xff;
+		buffer_index++;
+		tx_buffer[buffer_index] = (acps[i] >> 8) & 0xff;
+		buffer_index++;
+	}
+
+	for (i=0;i<OP_DATA_SIZE;i++) {
+		tx_buffer[buffer_index] = op_data[i] & 0xff;
+		buffer_index++;
+		tx_buffer[buffer_index] = (op_data[i] >> 8) & 0xff;
+		buffer_index++;
+	}
+
+	tx_buffer[TX_BUFFER_SIZE-4] = 0xad;
+	tx_buffer[TX_BUFFER_SIZE-3] = 0xde;
+	tx_buffer[TX_BUFFER_SIZE-2] = 0xef;
+	tx_buffer[TX_BUFFER_SIZE-1] = 0xbe;
+}
