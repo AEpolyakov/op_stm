@@ -218,3 +218,31 @@ void prepare_tx_buffer() {
 	tx_buffer[TX_BUFFER_SIZE-2] = 0xef;
 	tx_buffer[TX_BUFFER_SIZE-1] = 0xbe;
 }
+
+void uz_oo_handle() {
+	uint16_t op_command = (rx_buffer[1]<< 8 | rx_buffer[0]);
+
+	  int x = 147;
+	  int period;
+	  uint16_t oo_delay = 500;
+
+	  oo_delay = ((rx_buffer[3] << 8) | rx_buffer[2]) + x + 1;
+
+	  period = (op_command & 0x0100) ? 1550 : 2700;
+
+	  if (upr_zap_count == 0 || upr_zap_count > 10){
+	  } else {
+		  if (upr_zap_count % 2) {
+			  HAL_GPIO_WritePin(UPRZAP_GPIO_Port, UPRZAP_Pin, GPIO_PIN_RESET);
+			  delay(US_1);
+			  HAL_GPIO_WritePin(UPRZAP_GPIO_Port, UPRZAP_Pin, GPIO_PIN_SET);
+			  TIM9->ARR = oo_delay;
+		  } else {
+			  HAL_GPIO_WritePin(OO_GPIO_Port, GPIO_PIN_5, GPIO_PIN_SET);
+			  delay(US_1);
+			  HAL_GPIO_WritePin(OO_GPIO_Port, GPIO_PIN_5, GPIO_PIN_RESET);
+			  TIM9->ARR = period - oo_delay;
+		  }
+	  }
+	  upr_zap_count++;
+}

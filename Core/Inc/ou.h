@@ -27,4 +27,6 @@ void write_out();
 
 void prepare_tx_buffer();
 
+void uz_oo_handle();
+
 #endif /* INC_OU_H_ */
