@@ -31,6 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "my_gpio.h"
 #define USPU_START_ADDRESS 0x0
 #define ACPS_START_ADDRESS 0x40
 #define OP_START_ADDRESS 0xC0

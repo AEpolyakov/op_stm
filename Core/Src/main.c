@@ -107,6 +107,7 @@ int main(void)
   MX_TIM4_Init();
   MX_TIM9_Init();
   /* USER CODE BEGIN 2 */
+  buffer_direction_in();
   HAL_TIM_Base_Start_IT(&htim4);
   HAL_TIM_Base_Start_IT(&htim9);
   HAL_UART_Receive_DMA(&huart4, rx_buffer, RX_BUFFER_SIZE);
