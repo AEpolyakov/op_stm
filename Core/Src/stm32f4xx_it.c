@@ -268,6 +268,7 @@ void TIM4_IRQHandler(void)
   make_ti();
   ou_exchange();
   prepare_tx_buffer();
+  parse_rx_buffer();
 
   /* USER CODE END TIM4_IRQn 1 */
 }

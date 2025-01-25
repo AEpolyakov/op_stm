@@ -7,7 +7,6 @@
 void write_address(uint16_t address){
 	uint16_t temp = ~address;
 
-	HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(A0_GPIO_Port, A0_Pin, temp & GPIO_PIN_0 ? 1 : 0);
 	HAL_GPIO_WritePin(A1_GPIO_Port, A1_Pin, temp & GPIO_PIN_1 ? 1 : 0);
 	HAL_GPIO_WritePin(A2_GPIO_Port, A2_Pin, temp & GPIO_PIN_2 ? 1 : 0);
@@ -18,7 +17,6 @@ void write_address(uint16_t address){
 	HAL_GPIO_WritePin(A7_GPIO_Port, A7_Pin, temp & GPIO_PIN_7 ? 1 : 0);
 	HAL_GPIO_WritePin(A8_GPIO_Port, A8_Pin, temp & GPIO_PIN_8 ? 1 : 0);
 	HAL_GPIO_WritePin(A9_GPIO_Port, A9_Pin, temp & GPIO_PIN_9 ? 1 : 0);
-	HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_RESET);
 }
 
 void write_data(uint16_t data){

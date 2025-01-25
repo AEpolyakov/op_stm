@@ -52,7 +52,8 @@ uint16_t uspu_buttons[USPU_BUTTON_SIZE];
 uint16_t uspu_leds[USPU_LED_SIZE];
 uint16_t acps[ACPS_SIZE];
 uint16_t op_data[OP_DATA_SIZE];
-uint16_t op_command[OP_COMMAND_SIZE];
+uint16_t op_command;
+uint16_t oo_delay;
 uint8_t upr_zap_count;
 /* USER CODE END PV */
 

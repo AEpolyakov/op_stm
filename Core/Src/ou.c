@@ -26,9 +26,7 @@ void ou_exchange() {
 		write_word(uspu_leds[address], address + 0x21);
 	}
 
-	for(address = 0; address < OP_COMMAND_SIZE; address++) {
-		write_word(op_command[address], address + 0x01);
-	}
+	write_word(op_command, address + 0xc1);
 	write_address(0);
 }
 
@@ -71,6 +69,17 @@ uint16_t read_data(){
 
 
 	return ~t;
+}
+
+void parse_rx_buffer() {
+	int i;
+
+    op_command = (rx_buffer[1] << 8 | rx_buffer[0]);
+    oo_delay = ((rx_buffer[3] << 8) | rx_buffer[2]);
+
+	for(i=0;i<5;i++) {
+		uspu_leds[i] = (rx_buffer[i*2+3] << 8 | rx_buffer[i*2+4]);
+	}
 }
 
 void prepare_tx_buffer() {
@@ -129,31 +138,27 @@ void prepare_tx_buffer() {
 }
 
 void uz_oo_handle() {
-	uint16_t op_command = (rx_buffer[1]<< 8 | rx_buffer[0]);
 
-	  int x = 147;
-	  int period;
-	  uint16_t oo_delay = 500;
+	int period;
+	int del = oo_delay + 148;
 
-	  oo_delay = ((rx_buffer[3] << 8) | rx_buffer[2]) + x + 1;
+	period = (op_command & 0x0100) ? 1550 : 2700;
 
-	  period = (op_command & 0x0100) ? 1550 : 2700;
-
-	  if (upr_zap_count == 0 || upr_zap_count > 10){
+	if (upr_zap_count == 0 || upr_zap_count > 10){
+	} else {
+	  if (upr_zap_count % 2) {
+		  HAL_GPIO_WritePin(UPRZAP_GPIO_Port, UPRZAP_Pin, GPIO_PIN_RESET);
+		  delay(US_1);
+		  HAL_GPIO_WritePin(UPRZAP_GPIO_Port, UPRZAP_Pin, GPIO_PIN_SET);
+		  TIM9->ARR = del;
 	  } else {
-		  if (upr_zap_count % 2) {
-			  HAL_GPIO_WritePin(UPRZAP_GPIO_Port, UPRZAP_Pin, GPIO_PIN_RESET);
-			  delay(US_1);
-			  HAL_GPIO_WritePin(UPRZAP_GPIO_Port, UPRZAP_Pin, GPIO_PIN_SET);
-			  TIM9->ARR = oo_delay;
-		  } else {
-			  HAL_GPIO_WritePin(OO_GPIO_Port, GPIO_PIN_5, GPIO_PIN_SET);
-			  delay(US_1);
-			  HAL_GPIO_WritePin(OO_GPIO_Port, GPIO_PIN_5, GPIO_PIN_RESET);
-			  TIM9->ARR = period - oo_delay;
-		  }
+		  HAL_GPIO_WritePin(OO_GPIO_Port, GPIO_PIN_5, GPIO_PIN_SET);
+		  delay(US_1);
+		  HAL_GPIO_WritePin(OO_GPIO_Port, GPIO_PIN_5, GPIO_PIN_RESET);
+		  TIM9->ARR = period - del;
 	  }
-	  upr_zap_count++;
+	}
+	upr_zap_count++;
 }
 
 void reset_uz_counter() {

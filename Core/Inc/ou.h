@@ -18,6 +18,7 @@ uint16_t read_word(uint16_t address);
 
 
 void prepare_tx_buffer();
+void parse_rx_buffer();
 
 void uz_oo_handle();
 void reset_uz_counter();

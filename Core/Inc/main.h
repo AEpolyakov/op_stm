@@ -39,7 +39,6 @@ extern "C" {
 #define USPU_LED_SIZE 5
 #define ACPS_SIZE 6
 #define OP_DATA_SIZE 18
-#define OP_COMMAND_SIZE 1
 
 #define TX_BUFFER_SIZE 74
 #define RX_BUFFER_SIZE 14
@@ -51,7 +50,8 @@ extern uint16_t uspu_buttons[USPU_BUTTON_SIZE];
 extern uint16_t uspu_leds[USPU_LED_SIZE];
 extern uint16_t acps[ACPS_SIZE];
 extern uint16_t op_data[OP_DATA_SIZE];
-extern uint16_t op_command[OP_COMMAND_SIZE];
+extern uint16_t op_command;
+extern uint16_t oo_delay;
 
 extern uint8_t tx_buffer[TX_BUFFER_SIZE];
 extern uint8_t rx_buffer[RX_BUFFER_SIZE];
