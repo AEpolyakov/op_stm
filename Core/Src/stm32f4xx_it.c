@@ -262,10 +262,8 @@ void TIM4_IRQHandler(void)
   /* USER CODE END TIM4_IRQn 0 */
   HAL_TIM_IRQHandler(&htim4);
   /* USER CODE BEGIN TIM4_IRQn 1 */
-  TIM9->CNT = 0;
-  TIM9->ARR = 1200;
-  upr_zap_count = 0;
 
+  reset_uz_counter();
   make_ti();
   ou_exchange();
   prepare_tx_buffer();

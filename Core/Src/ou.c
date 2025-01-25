@@ -246,3 +246,9 @@ void uz_oo_handle() {
 	  }
 	  upr_zap_count++;
 }
+
+void reset_uz_counter() {
+	  TIM9->CNT = 0;
+	  TIM9->ARR = 1200;
+	  upr_zap_count = 0;
+}
