@@ -40,7 +40,7 @@ void write_data(uint16_t data){
 	HAL_GPIO_WritePin(D15_GPIO_Port, D15_Pin, temp & GPIO_PIN_15 ? 1 : 0);
 
 	write_out();
-	delay(500);
+	delay(100);
 }
 
 uint16_t gpio_data_read(){
@@ -79,11 +79,41 @@ void write_out(){
 void buffer_direction_out(){
 	HAL_GPIO_WritePin(L_RW_GPIO_Port, L_RW_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(DATA_DIR_GPIO_Port, DATA_DIR_Pin, GPIO_PIN_SET);
-	change_gpio_direction(D1_GPIO_Port, D1_Pin, 1);
+	change_gpio_direction(D0_GPIO_Port,  D0_Pin,  1);
+	change_gpio_direction(D1_GPIO_Port,  D1_Pin,  1);
+	change_gpio_direction(D2_GPIO_Port,  D2_Pin,  1);
+	change_gpio_direction(D3_GPIO_Port,  D3_Pin,  1);
+	change_gpio_direction(D4_GPIO_Port,  D4_Pin,  1);
+	change_gpio_direction(D5_GPIO_Port,  D5_Pin,  1);
+	change_gpio_direction(D6_GPIO_Port,  D6_Pin,  1);
+	change_gpio_direction(D7_GPIO_Port,  D7_Pin,  1);
+	change_gpio_direction(D8_GPIO_Port,  D8_Pin,  1);
+	change_gpio_direction(D9_GPIO_Port,  D9_Pin,  1);
+	change_gpio_direction(D10_GPIO_Port, D10_Pin, 1);
+	change_gpio_direction(D11_GPIO_Port, D11_Pin, 1);
+	change_gpio_direction(D12_GPIO_Port, D12_Pin, 1);
+	change_gpio_direction(D13_GPIO_Port, D13_Pin, 1);
+	change_gpio_direction(D14_GPIO_Port, D14_Pin, 1);
+	change_gpio_direction(D15_GPIO_Port, D15_Pin, 1);
 }
 
 void buffer_direction_in(){
-	change_gpio_direction(D1_GPIO_Port, D1_Pin, 0);
+	change_gpio_direction(D0_GPIO_Port,  D0_Pin,  0);
+	change_gpio_direction(D1_GPIO_Port,  D1_Pin,  0);
+	change_gpio_direction(D2_GPIO_Port,  D2_Pin,  0);
+	change_gpio_direction(D3_GPIO_Port,  D3_Pin,  0);
+	change_gpio_direction(D4_GPIO_Port,  D4_Pin,  0);
+	change_gpio_direction(D5_GPIO_Port,  D5_Pin,  0);
+	change_gpio_direction(D6_GPIO_Port,  D6_Pin,  0);
+	change_gpio_direction(D7_GPIO_Port,  D7_Pin,  0);
+	change_gpio_direction(D8_GPIO_Port,  D8_Pin,  0);
+	change_gpio_direction(D9_GPIO_Port,  D9_Pin,  0);
+	change_gpio_direction(D10_GPIO_Port, D10_Pin, 0);
+	change_gpio_direction(D11_GPIO_Port, D11_Pin, 0);
+	change_gpio_direction(D12_GPIO_Port, D12_Pin, 0);
+	change_gpio_direction(D13_GPIO_Port, D13_Pin, 0);
+	change_gpio_direction(D14_GPIO_Port, D14_Pin, 0);
+	change_gpio_direction(D15_GPIO_Port, D15_Pin, 0);
 	HAL_GPIO_WritePin(DATA_DIR_GPIO_Port, DATA_DIR_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(L_RW_GPIO_Port, L_RW_Pin, GPIO_PIN_SET);
 }
@@ -96,21 +126,49 @@ void make_ti(){
 	HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
 }
 
+uint8_t pin_to_number(uint16_t GPIO_Pin) {
+	switch(GPIO_Pin) {
+		case GPIO_PIN_0: return 0;
+		case GPIO_PIN_1: return 1;
+		case GPIO_PIN_2: return 2;
+		case GPIO_PIN_3: return 3;
+		case GPIO_PIN_4: return 4;
+		case GPIO_PIN_5: return 5;
+		case GPIO_PIN_6: return 6;
+		case GPIO_PIN_7: return 7;
+		case GPIO_PIN_8: return 8;
+		case GPIO_PIN_9: return 9;
+		case GPIO_PIN_10: return 10;
+		case GPIO_PIN_11: return 11;
+		case GPIO_PIN_12: return 12;
+		case GPIO_PIN_13: return 13;
+		case GPIO_PIN_14: return 14;
+		case GPIO_PIN_15: return 15;
+		default: return 0;
+	}
+}
+
 void change_gpio_direction(GPIO_TypeDef* GPIO_Port, uint16_t GPIO_Pin, uint8_t Mode)
 {
+
+	int pin_number = pin_to_number(GPIO_Pin);
+
     // Modify MODER register to change pin direction
     if (Mode == 1) {
-        GPIO_Port->MODER &= ~(3 << ((GPIO_Pin - 1) * 2));
-        GPIO_Port->MODER |=  (1 << ((GPIO_Pin - 1) * 2)); // Set pin as output with fast speed
+        GPIO_Port->MODER &= ~(3 << (pin_number * 2));
+        GPIO_Port->MODER |=  (1 << (pin_number * 2)); // Set pin as output with fast speed
 
-        GPIO_Port->OTYPER &= ~(1 << (GPIO_Pin - 1));
-        GPIO_Port->OTYPER |=  (0 << (GPIO_Pin - 1)); // Push-pull mode
+        GPIO_Port->OTYPER &= ~(1 << pin_number);
+        GPIO_Port->OTYPER |=  (0 << pin_number); // Push-pull mode
 
-        GPIO_Port->OSPEEDR &= ~(3 << ((GPIO_Pin - 1) * 2));
-        GPIO_Port->OSPEEDR |=  (3 << ((GPIO_Pin - 1) * 2)); // Fastest speed
+        GPIO_Port->OSPEEDR &= ~(3 << (pin_number * 2));
+        GPIO_Port->OSPEEDR |=  (3 << (pin_number * 2)); // Fastest speed
+
+        GPIO_Port->PUPDR &= ~(3 << (pin_number * 2));
+        GPIO_Port->PUPDR |=  (1 << (pin_number * 2));
 
     } else if (Mode == 0) {
         // Set pin as input
-        GPIO_Port->MODER &= ~(3 << ((GPIO_Pin - 1) * 2));
+        GPIO_Port->MODER &= ~(3 << (pin_number * 2));
     }
 }

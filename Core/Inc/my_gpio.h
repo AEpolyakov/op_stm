@@ -11,3 +11,4 @@ uint16_t gpio_data_read();
 void make_ti();
 
 void change_gpio_direction(GPIO_TypeDef* GPIO_Port, uint16_t GPIO_Pin, uint8_t Mode);
+uint8_t pin_to_number(uint16_t GPIO_Pin);
