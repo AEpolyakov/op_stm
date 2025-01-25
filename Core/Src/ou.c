@@ -10,6 +10,7 @@ uint8_t zero_sin_error;
 void ou_exchange() {
 	uint8_t address;
 
+	buffer_direction_in();
 	for(address = 0; address < USPU_BUTTON_SIZE; address++) {
 		uspu_buttons[address] = read_word(address + 0x21);
 	}
@@ -22,11 +23,14 @@ void ou_exchange() {
 		op_data[address] = read_word(address + 0xc1);
 	}
 
+	buffer_direction_out();
 	for(address = 0; address < USPU_LED_SIZE; address++) {
 		write_word(uspu_leds[address], address + 0x21);
 	}
 
 	write_word(op_command, address + 0xc1);
+
+    buffer_direction_in();
 	write_address(0);
 }
 
@@ -166,4 +170,3 @@ void reset_uz_counter() {
 	  TIM9->ARR = 1200;
 	  upr_zap_count = 0;
 }
-

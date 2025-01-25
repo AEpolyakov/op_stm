@@ -22,8 +22,6 @@ void write_address(uint16_t address){
 void write_data(uint16_t data){
 	uint16_t temp = ~data;
 
-	buffer_direction_out();
-
 	HAL_GPIO_WritePin(D0_GPIO_Port,  D0_Pin,  temp & GPIO_PIN_0 ? 1 : 0);
 	HAL_GPIO_WritePin(D1_GPIO_Port,  D1_Pin,  temp & GPIO_PIN_1 ? 1 : 0);
 	HAL_GPIO_WritePin(D2_GPIO_Port,  D2_Pin,  temp & GPIO_PIN_2 ? 1 : 0);
@@ -43,7 +41,6 @@ void write_data(uint16_t data){
 
 	write_out();
 	delay(500);
-	buffer_direction_in();
 }
 
 uint16_t gpio_data_read(){
@@ -82,13 +79,13 @@ void write_out(){
 void buffer_direction_out(){
 	HAL_GPIO_WritePin(L_RW_GPIO_Port, L_RW_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(DATA_DIR_GPIO_Port, DATA_DIR_Pin, GPIO_PIN_SET);
-
-//	HAL_GPIO_WritePin(D0_GPIO_Port,  D0_Pin,  temp & GPIO_PIN_0 ? 1 : 0);
+	change_gpio_direction(D1_GPIO_Port, D1_Pin, 1);
 }
 
 void buffer_direction_in(){
-	HAL_GPIO_WritePin(L_RW_GPIO_Port, L_RW_Pin, GPIO_PIN_SET);
+	change_gpio_direction(D1_GPIO_Port, D1_Pin, 0);
 	HAL_GPIO_WritePin(DATA_DIR_GPIO_Port, DATA_DIR_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(L_RW_GPIO_Port, L_RW_Pin, GPIO_PIN_SET);
 }
 
 void make_ti(){
@@ -97,4 +94,23 @@ void make_ti(){
 	delay(US_1);
 	HAL_GPIO_WritePin(L_TIOUT_GPIO_Port, L_TIOUT_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
+}
+
+void change_gpio_direction(GPIO_TypeDef* GPIO_Port, uint16_t GPIO_Pin, uint8_t Mode)
+{
+    // Modify MODER register to change pin direction
+    if (Mode == 1) {
+        GPIO_Port->MODER &= ~(3 << ((GPIO_Pin - 1) * 2));
+        GPIO_Port->MODER |=  (1 << ((GPIO_Pin - 1) * 2)); // Set pin as output with fast speed
+
+        GPIO_Port->OTYPER &= ~(1 << (GPIO_Pin - 1));
+        GPIO_Port->OTYPER |=  (0 << (GPIO_Pin - 1)); // Push-pull mode
+
+        GPIO_Port->OSPEEDR &= ~(3 << ((GPIO_Pin - 1) * 2));
+        GPIO_Port->OSPEEDR |=  (3 << ((GPIO_Pin - 1) * 2)); // Fastest speed
+
+    } else if (Mode == 0) {
+        // Set pin as input
+        GPIO_Port->MODER &= ~(3 << ((GPIO_Pin - 1) * 2));
+    }
 }
