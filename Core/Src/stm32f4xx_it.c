@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "utils.h"
 #include "ou.h"
+#include "my_gpio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
