@@ -28,7 +28,7 @@ void ou_exchange() {
 		write_word(uspu_leds[address], address + 0x21);
 	}
 
-	write_word(op_command, address + 0xc1);
+	write_word(op_command, 0xc1);
 
     buffer_direction_in();
 	write_address(0);
